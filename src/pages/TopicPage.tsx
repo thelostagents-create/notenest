@@ -1,12 +1,21 @@
-import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getTopic } from "../data/topics";
-import Quiz from "../components/Quiz";
+import { getLessonProgress, type Progress } from "../lib/progress";
 
 export default function TopicPage() {
   const { slug } = useParams();
-  const [tab, setTab] = useState<"notes" | "quiz">("notes");
   const topic = slug ? getTopic(slug) : undefined;
+  const [progressMap, setProgressMap] = useState<Record<string, Progress | null>>({});
+
+  useEffect(() => {
+    if (!topic) return;
+    const map: Record<string, Progress | null> = {};
+    for (const lesson of topic.lessons) {
+      map[lesson.slug] = getLessonProgress(topic.slug, lesson.slug);
+    }
+    setProgressMap(map);
+  }, [topic]);
 
   if (!topic) return <Navigate to="/subjects" replace />;
 
@@ -26,36 +35,27 @@ export default function TopicPage() {
         <p>{topic.subtitle}</p>
       </div>
 
-      <div className="tabs">
-        <button className={"tab-btn" + (tab === "notes" ? " active" : "")} onClick={() => setTab("notes")}>
-          Guided Notes
-        </button>
-        <button className={"tab-btn" + (tab === "quiz" ? " active" : "")} onClick={() => setTab("quiz")}>
-          Practice Quiz ({topic.questions.length})
-        </button>
+      <div className="section-heading" style={{ marginTop: 0 }}>
+        <h2>Lessons</h2>
+        <p>{topic.lessons.length} total</p>
       </div>
 
-      {tab === "notes" ? (
-        <div>
-          {topic.notes.map((section) => (
-            <div className="notes-section" key={section.heading}>
-              <h3>{section.heading}</h3>
-              <ul>
-                {section.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          <div className="quiz-actions">
-            <button className="btn" style={{ background: topic.accent }} onClick={() => setTab("quiz")}>
-              Start practice quiz →
-            </button>
-          </div>
-        </div>
-      ) : (
-        <Quiz key={topic.slug} questions={topic.questions} accent={topic.accent} slug={topic.slug} />
-      )}
+      <div className="lesson-list">
+        {topic.lessons.map((lesson, i) => {
+          const progress = progressMap[lesson.slug];
+          const perfect = progress && progress.score === progress.total;
+          return (
+            <Link key={lesson.slug} to={`/subjects/${topic.slug}/${lesson.slug}`} className="lesson-card">
+              <span className={"lesson-number" + (perfect ? " done" : "")}>{perfect ? "✓" : i + 1}</span>
+              <span className="lesson-card-body">
+                <h4>{lesson.title}</h4>
+                <p>{lesson.summary}</p>
+              </span>
+              <span className="lesson-score">{progress ? `${progress.score}/${progress.total}` : "Start →"}</span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

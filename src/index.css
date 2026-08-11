@@ -189,24 +189,6 @@ main {
   padding: 32px 0 96px;
 }
 
-/* Hero */
-.hero {
-  padding: 40px 0 8px;
-  text-align: center;
-}
-
-.hero h1 {
-  font-size: clamp(2rem, 5vw, 2.9rem);
-  margin: 0 0 12px;
-}
-
-.hero p {
-  color: var(--text-dim);
-  font-size: 1.05rem;
-  max-width: 560px;
-  margin: 0 auto;
-}
-
 /* Section headings */
 .section-heading {
   display: flex;
@@ -371,6 +353,77 @@ main {
 .topic-hero p {
   color: var(--text-dim);
   margin: 0;
+}
+
+/* Lesson list */
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.lesson-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.lesson-card:hover {
+  border-color: var(--accent-color, var(--accent));
+}
+
+.lesson-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.lesson-number.done {
+  background: color-mix(in srgb, var(--good) 25%, var(--surface));
+  color: var(--good);
+}
+
+.lesson-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-card-body h4 {
+  margin: 0 0 3px;
+  font-size: 0.96rem;
+  font-family: var(--sans);
+  font-weight: 700;
+}
+
+.lesson-card-body p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.lesson-score {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tabs {

@@ -1,13 +1,18 @@
 const KEY_PREFIX = "notenest:progress:";
+const GAME_KEY_PREFIX = "notenest:highscore:";
 
 export interface Progress {
   score: number;
   total: number;
 }
 
-export function getProgress(slug: string): Progress | null {
+function lessonKey(topicSlug: string, lessonSlug: string) {
+  return `${topicSlug}:${lessonSlug}`;
+}
+
+export function getLessonProgress(topicSlug: string, lessonSlug: string): Progress | null {
   try {
-    const raw = localStorage.getItem(KEY_PREFIX + slug);
+    const raw = localStorage.getItem(KEY_PREFIX + lessonKey(topicSlug, lessonSlug));
     if (!raw) return null;
     return JSON.parse(raw) as Progress;
   } catch {
@@ -15,17 +20,29 @@ export function getProgress(slug: string): Progress | null {
   }
 }
 
-export function saveProgress(slug: string, score: number, total: number) {
+export function saveLessonProgress(topicSlug: string, lessonSlug: string, score: number, total: number) {
   try {
-    const existing = getProgress(slug);
+    const key = KEY_PREFIX + lessonKey(topicSlug, lessonSlug);
+    const existing = getLessonProgress(topicSlug, lessonSlug);
     if (existing && existing.score >= score) return;
-    localStorage.setItem(KEY_PREFIX + slug, JSON.stringify({ score, total }));
+    localStorage.setItem(key, JSON.stringify({ score, total }));
   } catch {
     // localStorage unavailable — ignore
   }
 }
 
-const GAME_KEY_PREFIX = "notenest:highscore:";
+export interface TopicStats {
+  attempted: number;
+  total: number;
+}
+
+export function getTopicStats(topicSlug: string, lessonSlugs: string[]): TopicStats {
+  let attempted = 0;
+  for (const slug of lessonSlugs) {
+    if (getLessonProgress(topicSlug, slug)) attempted++;
+  }
+  return { attempted, total: lessonSlugs.length };
+}
 
 export function getHighScore(gameId: string): number {
   try {

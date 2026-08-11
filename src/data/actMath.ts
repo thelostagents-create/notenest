@@ -7,7 +7,12 @@ const actMath: Topic = {
   subtitle: "Pre-algebra through trigonometry — 60 questions in 60 minutes.",
   emoji: "📐",
   accent: "#2f8f5b",
-  notes: [
+  lessons: [
+    {
+      slug: "full-review",
+      title: "Full Math Review",
+      summary: "Algebra, geometry, and trigonometry in one set.",
+      notes: [
     {
       heading: "Pre-Algebra & Elementary Algebra",
       bullets: [
@@ -51,8 +56,8 @@ const actMath: Topic = {
         "Skip and return: on a timed section, don't let one hard problem eat the clock — mark it and move on.",
       ],
     },
-  ],
-  questions: [
+      ],
+      questions: [
     {
       prompt: "If 3x − 7 = 20, what is x?",
       choices: ["7", "9", "13", "27"],
@@ -100,6 +105,8 @@ const actMath: Topic = {
       choices: ["6π", "12π", "36π", "72π"],
       answerIndex: 2,
       explanation: "Area = πr² = π(6²) = 36π.",
+    },
+      ],
     },
   ],
 };

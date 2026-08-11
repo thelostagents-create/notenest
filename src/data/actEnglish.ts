@@ -7,7 +7,12 @@ const actEnglish: Topic = {
   subtitle: "Grammar, usage, and rhetorical skills — 75 questions in 45 minutes.",
   emoji: "✏️",
   accent: "#e0574b",
-  notes: [
+  lessons: [
+    {
+      slug: "full-review",
+      title: "Full English Review",
+      summary: "Punctuation, sentence structure, usage, and rhetorical skills in one set.",
+      notes: [
     {
       heading: "Punctuation Essentials",
       bullets: [
@@ -45,8 +50,8 @@ const actEnglish: Topic = {
         "Match the passage's tone and style — avoid overly casual or overly flowery language in a formal essay.",
       ],
     },
-  ],
-  questions: [
+      ],
+      questions: [
     {
       prompt: "Choose the best version of the underlined portion: \"The coach, along with the players, were excited about the win.\"",
       choices: ["were excited about the win", "was excited about the win", "have been excited about the win", "being excited about the win"],
@@ -115,6 +120,8 @@ const actEnglish: Topic = {
       ],
       answerIndex: 2,
       explanation: "'Dogs' (plural, no possession) needs no apostrophe; 'owner's yard' shows singular possession — this is the only fully correct version.",
+    },
+      ],
     },
   ],
 };

@@ -1,8 +1,20 @@
 import { useState } from "react";
 import type { Question } from "../types";
-import { saveProgress } from "../lib/progress";
+import { saveLessonProgress } from "../lib/progress";
 
-export default function Quiz({ questions, accent, slug }: { questions: Question[]; accent: string; slug: string }) {
+export default function Quiz({
+  questions,
+  accent,
+  topicSlug,
+  lessonSlug,
+  onComplete,
+}: {
+  questions: Question[];
+  accent: string;
+  topicSlug: string;
+  lessonSlug: string;
+  onComplete?: () => void;
+}) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -19,8 +31,9 @@ export default function Quiz({ questions, accent, slug }: { questions: Question[
 
   function next() {
     if (isLast) {
-      saveProgress(slug, score, questions.length);
+      saveLessonProgress(topicSlug, lessonSlug, score, questions.length);
       setDone(true);
+      onComplete?.();
       return;
     }
     setIndex((i) => i + 1);

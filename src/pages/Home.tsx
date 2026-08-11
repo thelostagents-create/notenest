@@ -8,15 +8,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="hero">
-        <h1>Study smarter, not harder.</h1>
-        <p>
-          Free guided notes, practice questions, and ACT minigames for the subjects that matter most —
-          built to help you actually remember the material.
-        </p>
-      </section>
-
-      <div className="section-heading">
+      <div className="section-heading" style={{ marginTop: 32 }}>
         <h2>ACT Prep</h2>
         <Link to="/minigames" style={{ color: "var(--accent)", fontFamily: "var(--mono)", fontSize: "0.85rem", fontWeight: 700, textDecoration: "none" }}>
           Try the minigames →

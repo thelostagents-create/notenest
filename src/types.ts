@@ -10,6 +10,14 @@ export interface Question {
   explanation: string;
 }
 
+export interface Lesson {
+  slug: string;
+  title: string;
+  summary: string;
+  notes: NoteSection[];
+  questions: Question[];
+}
+
 export type Category = "ACT Prep" | "AP Courses";
 
 export interface Topic {
@@ -19,6 +27,5 @@ export interface Topic {
   subtitle: string;
   emoji: string;
   accent: string;
-  notes: NoteSection[];
-  questions: Question[];
+  lessons: Lesson[];
 }
