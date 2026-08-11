@@ -66,7 +66,7 @@ export default function Layout() {
   }
 
   return (
-    <>
+    <div className="app-frame">
       <header className="site-header">
         <div className="container">
           <NavLink to="/" className="brand">
@@ -100,6 +100,6 @@ export default function Layout() {
           ))}
         </div>
       </nav>
-    </>
+    </div>
   );
 }
