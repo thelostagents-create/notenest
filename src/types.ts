@@ -18,6 +18,13 @@ export interface Lesson {
   questions: Question[];
 }
 
+export interface Unit {
+  slug: string;
+  title: string;
+  summary: string;
+  lessons: Lesson[];
+}
+
 export type Category = "ACT Prep" | "AP Courses";
 
 export interface Topic {
@@ -27,5 +34,8 @@ export interface Topic {
   subtitle: string;
   emoji: string;
   accent: string;
-  lessons: Lesson[];
+  /** Multi-level courses (AP): grouped into units, each with several lessons. */
+  units?: Unit[];
+  /** Flat, single-level topics (ACT): a plain list of lessons, no unit grouping. */
+  lessons?: Lesson[];
 }

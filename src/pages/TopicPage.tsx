@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getTopic } from "../data/topics";
-import { getLessonProgress, type Progress } from "../lib/progress";
+import { getTopic, getAllLessons } from "../data/topics";
+import { getLessonProgress, getTopicStats, type Progress } from "../lib/progress";
 
 export default function TopicPage() {
   const { slug } = useParams();
@@ -11,7 +11,7 @@ export default function TopicPage() {
   useEffect(() => {
     if (!topic) return;
     const map: Record<string, Progress | null> = {};
-    for (const lesson of topic.lessons) {
+    for (const lesson of getAllLessons(topic)) {
       map[lesson.slug] = getLessonProgress(topic.slug, lesson.slug);
     }
     setProgressMap(map);
@@ -35,27 +35,56 @@ export default function TopicPage() {
         <p>{topic.subtitle}</p>
       </div>
 
-      <div className="section-heading" style={{ marginTop: 0 }}>
-        <h2>Lessons</h2>
-        <p>{topic.lessons.length} total</p>
-      </div>
-
-      <div className="lesson-list">
-        {topic.lessons.map((lesson, i) => {
-          const progress = progressMap[lesson.slug];
-          const perfect = progress && progress.score === progress.total;
-          return (
-            <Link key={lesson.slug} to={`/subjects/${topic.slug}/${lesson.slug}`} className="lesson-card">
-              <span className={"lesson-number" + (perfect ? " done" : "")}>{perfect ? "✓" : i + 1}</span>
-              <span className="lesson-card-body">
-                <h4>{lesson.title}</h4>
-                <p>{lesson.summary}</p>
-              </span>
-              <span className="lesson-score">{progress ? `${progress.score}/${progress.total}` : "Start →"}</span>
-            </Link>
-          );
-        })}
-      </div>
+      {topic.units ? (
+        <>
+          <div className="section-heading" style={{ marginTop: 0 }}>
+            <h2>Units</h2>
+            <p>{topic.units.length} total</p>
+          </div>
+          <div className="lesson-list">
+            {topic.units.map((unit, i) => {
+              const lessonSlugs = unit.lessons.map((l) => l.slug);
+              const stats = getTopicStats(topic.slug, lessonSlugs);
+              const complete = stats.total > 0 && stats.attempted === stats.total;
+              return (
+                <Link key={unit.slug} to={`/subjects/${topic.slug}/${unit.slug}`} className="lesson-card">
+                  <span className={"lesson-number" + (complete ? " done" : "")}>{complete ? "✓" : i + 1}</span>
+                  <span className="lesson-card-body">
+                    <h4>{unit.title}</h4>
+                    <p>{unit.summary}</p>
+                  </span>
+                  <span className="lesson-score">
+                    {stats.attempted}/{stats.total}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="section-heading" style={{ marginTop: 0 }}>
+            <h2>Lessons</h2>
+            <p>{topic.lessons?.length ?? 0} total</p>
+          </div>
+          <div className="lesson-list">
+            {(topic.lessons ?? []).map((lesson, i) => {
+              const progress = progressMap[lesson.slug];
+              const perfect = progress && progress.score === progress.total;
+              return (
+                <Link key={lesson.slug} to={`/subjects/${topic.slug}/${lesson.slug}`} className="lesson-card">
+                  <span className={"lesson-number" + (perfect ? " done" : "")}>{perfect ? "✓" : i + 1}</span>
+                  <span className="lesson-card-body">
+                    <h4>{lesson.title}</h4>
+                    <p>{lesson.summary}</p>
+                  </span>
+                  <span className="lesson-score">{progress ? `${progress.score}/${progress.total}` : "Start →"}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

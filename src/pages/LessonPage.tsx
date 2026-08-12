@@ -1,87 +1,41 @@
-import { useEffect, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
-import { getTopic } from "../data/topics";
-import Quiz from "../components/Quiz";
+import { Navigate, useParams } from "react-router-dom";
+import { getTopic, getUnit } from "../data/topics";
+import LessonView from "../components/LessonView";
 
 export default function LessonPage() {
-  const { slug, lessonSlug } = useParams();
-  const [tab, setTab] = useState<"notes" | "quiz">("notes");
-  const [quizDone, setQuizDone] = useState(false);
+  const { slug, unitSlug, lessonSlug } = useParams();
   const topic = slug ? getTopic(slug) : undefined;
-  const lessonIndex = topic?.lessons.findIndex((l) => l.slug === lessonSlug) ?? -1;
-  const lesson = topic && lessonIndex >= 0 ? topic.lessons[lessonIndex] : undefined;
+  const unit = topic && unitSlug ? getUnit(topic, unitSlug) : undefined;
+  const lessonIndex = unit?.lessons.findIndex((l) => l.slug === lessonSlug) ?? -1;
+  const lesson = unit && lessonIndex >= 0 ? unit.lessons[lessonIndex] : undefined;
 
-  useEffect(() => {
-    setQuizDone(false);
-    setTab("notes");
-  }, [lessonSlug]);
+  if (!topic || !unit || !lesson) return <Navigate to={topic ? `/subjects/${topic.slug}` : "/subjects"} replace />;
 
-  if (!topic || !lesson) return <Navigate to="/subjects" replace />;
+  const unitIndex = topic.units!.findIndex((u) => u.slug === unit.slug);
+  const nextInUnit = unit.lessons[lessonIndex + 1];
+  const nextUnit = topic.units![unitIndex + 1];
 
-  const nextLesson = topic.lessons[lessonIndex + 1];
+  const nextHref = nextInUnit
+    ? `/subjects/${topic.slug}/${unit.slug}/${nextInUnit.slug}`
+    : nextUnit
+      ? `/subjects/${topic.slug}/${nextUnit.slug}/${nextUnit.lessons[0].slug}`
+      : undefined;
+  const nextLabel = nextInUnit
+    ? `Next: ${nextInUnit.title.replace(/^Lesson \d+:\s*/, "")}`
+    : nextUnit
+      ? `Next unit: ${nextUnit.title}`
+      : undefined;
 
   return (
-    <div style={{ ["--accent-color" as string]: topic.accent }}>
-      <p style={{ marginBottom: 18 }}>
-        <Link to={`/subjects/${topic.slug}`} style={{ color: "var(--text-dim)", fontFamily: "var(--mono)", fontSize: "0.82rem", textDecoration: "none" }}>
-          ← {topic.title}
-        </Link>
-      </p>
-
-      <div className="topic-hero">
-        <div className="kicker">
-          {topic.title} · Lesson {lessonIndex + 1} of {topic.lessons.length}
-        </div>
-        <h1>{lesson.title.replace(/^Lesson \d+:\s*/, "")}</h1>
-        <p>{lesson.summary}</p>
-      </div>
-
-      <div className="tabs">
-        <button className={"tab-btn" + (tab === "notes" ? " active" : "")} onClick={() => setTab("notes")}>
-          Guided Notes
-        </button>
-        <button className={"tab-btn" + (tab === "quiz" ? " active" : "")} onClick={() => setTab("quiz")}>
-          Practice Quiz ({lesson.questions.length})
-        </button>
-      </div>
-
-      {tab === "notes" ? (
-        <div>
-          {lesson.notes.map((section) => (
-            <div className="notes-section" key={section.heading}>
-              <h3>{section.heading}</h3>
-              <ul>
-                {section.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          <div className="quiz-actions">
-            <button className="btn" style={{ background: topic.accent }} onClick={() => setTab("quiz")}>
-              Start practice quiz →
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <Quiz
-            key={lesson.slug}
-            questions={lesson.questions}
-            accent={topic.accent}
-            topicSlug={topic.slug}
-            lessonSlug={lesson.slug}
-            onComplete={() => setQuizDone(true)}
-          />
-          {quizDone && nextLesson && (
-            <div className="quiz-actions">
-              <Link to={`/subjects/${topic.slug}/${nextLesson.slug}`} className="btn secondary">
-                Next: {nextLesson.title.replace(/^Lesson \d+:\s*/, "")} →
-              </Link>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+    <LessonView
+      lesson={lesson}
+      accent={topic.accent}
+      kicker={`Unit ${unitIndex + 1}: ${unit.title} · Lesson ${unitIndex + 1}.${lessonIndex + 1}`}
+      backHref={`/subjects/${topic.slug}/${unit.slug}`}
+      backLabel={unit.title}
+      topicSlug={topic.slug}
+      nextHref={nextHref}
+      nextLabel={nextLabel}
+    />
   );
 }

@@ -381,15 +381,16 @@ main {
 }
 
 .lesson-number {
-  width: 36px;
+  min-width: 36px;
   height: 36px;
-  border-radius: 50%;
+  padding: 0 6px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   background: var(--surface-2);
   color: var(--text-dim);
   flex-shrink: 0;

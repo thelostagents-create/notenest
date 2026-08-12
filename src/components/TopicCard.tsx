@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { Topic } from "../types";
+import { getAllLessons } from "../data/topics";
 import { getTopicStats, type TopicStats } from "../lib/progress";
 
 export default function TopicCard({ topic }: { topic: Topic }) {
-  const lessonSlugs = topic.lessons.map((l) => l.slug);
+  const lessonSlugs = getAllLessons(topic).map((l) => l.slug);
   const [stats, setStats] = useState<TopicStats>({ attempted: 0, total: lessonSlugs.length });
 
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function TopicCard({ topic }: { topic: Topic }) {
   }, [topic.slug]);
 
   const pct = stats.total ? Math.round((stats.attempted / stats.total) * 100) : 0;
-  const lessonWord = topic.lessons.length === 1 ? "lesson" : "lessons";
+  const lessonWord = stats.total === 1 ? "lesson" : "lessons";
 
   return (
     <Link to={`/subjects/${topic.slug}`} className="topic-card" style={{ ["--accent-color" as string]: topic.accent }}>
